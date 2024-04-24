@@ -1,0 +1,19 @@
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: 'gradle'
+      - run: ./gradlew distTar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gplayup-1.0-SNAPSHOT.tar
+          path: build/distributions/gplayup-1.0-SNAPSHOT.tar
