@@ -1,6 +1,5 @@
 package com.anandbose
 
-const val LOG_ENABLED = true
 const val LOG_ACCESS_TOKEN = false
 
 const val APP_NAME = "gplayup"

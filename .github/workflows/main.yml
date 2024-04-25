@@ -12,8 +12,9 @@ jobs:
           distribution: 'temurin'
           java-version: 17
           cache: 'gradle'
+      - uses: gradle/actions/setup-gradle@v3
       - run: ./gradlew distTar
       - uses: actions/upload-artifact@v4
         with:
-          name: gplayup-1.0-SNAPSHOT.tar
-          path: build/distributions/gplayup-1.0-SNAPSHOT.tar
+          name: gplayup-1.0.0.tar
+          path: build/distributions/gplayup-1.0.0.tar

@@ -85,7 +85,7 @@ fun parseArgs(args: Array<String>): ArgParseResult {
     val serviceAccountFile = if (serviceAccountFilePath != null) {
         File(serviceAccountFilePath)
     } else {
-        return ArgumentError("Service account path should not be empty.")
+        return ArgumentError("Service account file is required for authentication.")
     }
     if (!serviceAccountFile.exists()) {
         return ArgumentError("Service account file $serviceAccountFilePath does not exist.")
@@ -94,7 +94,7 @@ fun parseArgs(args: Array<String>): ArgParseResult {
         return ArgumentError("Service account file $serviceAccountFilePath cannot be read.")
     }
     if (applicationName.isNullOrBlank()) {
-        return ArgumentError("Application name cannot be empty.")
+        return ArgumentError("Application package identifier is required.")
     }
     val appPath = when {
         bundlePath != null -> {
@@ -117,10 +117,10 @@ fun parseArgs(args: Array<String>): ArgParseResult {
             }
             ApkPath(file)
         }
-        else -> return ArgumentError("Either $ARG_BUNDLE_PATH or $ARG_APK_PATH must be provided.")
+        else -> return ArgumentError("Either APK or App Bundle is required.")
     }
     if (track == null) {
-        return ArgumentError("Track cannot be empty")
+        return ArgumentError("Track is required.")
     }
     return ProgramArguments(
         serviceAccountFile = serviceAccountFile,

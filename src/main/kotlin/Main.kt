@@ -14,7 +14,7 @@ import com.google.auth.oauth2.GoogleCredentials
 fun main(args: Array<String>) {
     when (val argParseResult = parseArgs(args)) {
         is ArgumentError -> {
-            println(argParseResult.error)
+            println("⛔ ${argParseResult.error}")
             printHelp()
         }
         is ProgramArguments -> runWithArguments(argParseResult)
@@ -38,11 +38,14 @@ fun runWithArguments(args: ProgramArguments) {
     val token = credential.refreshAccessToken()?.tokenValue
     if (token != null) {
         if (LOG_ACCESS_TOKEN) {
-            logDecorated("Access Token", token)
+            println("⚠\uFE0F⚠\uFE0F⚠\uFE0F BEGIN ACCESS TOKEN ⚠\uFE0F⚠\uFE0F⚠\uFE0F")
+            println(token)
+            println("⚠\uFE0F⚠\uFE0F⚠\uFE0F END ACCESS TOKEN ⚠\uFE0F⚠\uFE0F⚠\uFE0F")
         }
+        println("✅ Authenticated with Google Play")
         uploadToGooglePlay(args, credential)
     } else {
-        println("Failed to obtain access token")
+        println("⛔ Authentication failed")
     }
 }
 
@@ -58,22 +61,24 @@ fun uploadToGooglePlay(args: ProgramArguments, credentials: GoogleCredentials) {
     val insert = edits.insert(args.applicationName, null)
     val appEdit = insert.execute()
     val editId = appEdit.id
-    logDecorated("Created Edit ID: $editId")
+    println("✍\uFE0F Created Edit ID: $editId")
     val versionCode = when (val app = args.appPath) {
         is ApkPath -> {
+            println("\uD83D\uDCE6 Uploading APK")
             val apkFile = FileContent(MIME_TYPE_APK, app.file)
             val upload = edits.apks()
                 .upload(args.applicationName, editId, apkFile)
             val apk = upload.execute()
-            logDecorated("Uploaded APK version code: ${apk.versionCode}")
+            println("\uD83D\uDE80 Uploaded APK (version code: ${apk.versionCode})")
             apk.versionCode
         }
         is BundlePath -> {
+            println("\uD83D\uDCE6 Uploading App Bundle")
             val bundleFile = FileContent(MIME_TYPE_BUNDLE, app.file)
             val upload = edits.bundles()
                 .upload(args.applicationName, editId, bundleFile)
             val bundle = upload.execute()
-            logDecorated("Uploaded App Bundle version code: ${bundle.versionCode}")
+            println("\uD83D\uDE80 Uploaded App Bundle (version code: ${bundle.versionCode})")
             bundle.versionCode
         }
     }
@@ -99,9 +104,9 @@ fun uploadToGooglePlay(args: ProgramArguments, credentials: GoogleCredentials) {
             )
         )
     val track = update.execute()
-    logDecorated("Track ${track.track} has been updated.")
+    println("✅ Track ${track.track} has been updated.")
 
     val commit = edits.commit(args.applicationName, editId)
     val appEditFinal = commit.execute()
-    logDecorated("App edit ${appEditFinal.id} has been committed.")
+    println("✨ App (Edit ID${appEditFinal.id}) has been committed to ${track.track} track.")
 }
